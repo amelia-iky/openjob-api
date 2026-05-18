@@ -54,11 +54,11 @@ export const up = (pgm) => {
       notNull: true,
     },
     salary_min: {
-      type: 'integer',
+      type: 'numeric(12,2)',
       notNull: true,
     },
     salary_max: {
-      type: 'integer',
+      type: 'numeric(12,2)',
       notNull: true,
     },
     is_salary_visible: {

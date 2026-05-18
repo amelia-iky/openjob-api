@@ -15,7 +15,7 @@ export const up = (pgm) => {
       primaryKey: true,
     },
     name: {
-      type: 'varchar(100)',
+      type: 'varchar(50)',
       notNull: true,
     },
     location: {

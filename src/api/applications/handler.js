@@ -15,9 +15,7 @@ const getApplicationsHandler = async (req, res) => {
 const getApplicationByIdHandler = async (req, res) => {
   const { id } = req.params;
 
-  const result = await pool.query('SELECT * FROM applications WHERE id = $1', [
-    id,
-  ]);
+  const result = await pool.query('SELECT * FROM applications WHERE id = $1', [id]);
 
   if (!result.rows.length) {
     return res.status(404).json({
@@ -35,10 +33,7 @@ const getApplicationByIdHandler = async (req, res) => {
 const getApplicationsByUserIdHandler = async (req, res) => {
   const { userId } = req.params;
 
-  const result = await pool.query(
-    'SELECT * FROM applications WHERE user_id = $1',
-    [userId],
-  );
+  const result = await pool.query('SELECT * FROM applications WHERE user_id = $1', [userId]);
 
   return res.status(200).json({
     status: 'success',
@@ -51,10 +46,7 @@ const getApplicationsByUserIdHandler = async (req, res) => {
 const getApplicationsByJobIdHandler = async (req, res) => {
   const { jobId } = req.params;
 
-  const result = await pool.query(
-    'SELECT * FROM applications WHERE job_id = $1',
-    [jobId],
-  );
+  const result = await pool.query('SELECT * FROM applications WHERE job_id = $1', [jobId]);
 
   return res.status(200).json({
     status: 'success',
@@ -74,7 +66,7 @@ const addApplicationHandler = async (req, res) => {
       INSERT INTO applications (id, user_id, job_id)
       VALUES ($1, $2, $3)
     `,
-    [id, req.user.id, job_id],
+    [id, req.user.id, job_id]
   );
 
   return res.status(201).json({
@@ -89,9 +81,7 @@ const addApplicationHandler = async (req, res) => {
 const updateApplicationStatusHandler = async (req, res) => {
   const { id } = req.params;
 
-  const result = await pool.query('SELECT id FROM applications WHERE id = $1', [
-    id,
-  ]);
+  const result = await pool.query('SELECT id FROM applications WHERE id = $1', [id]);
 
   if (!result.rows.length) {
     return res.status(404).json({
@@ -109,10 +99,7 @@ const updateApplicationStatusHandler = async (req, res) => {
 const deleteApplicationHandler = async (req, res) => {
   const { id } = req.params;
 
-  const result = await pool.query(
-    'DELETE FROM applications WHERE id = $1 RETURNING id',
-    [id],
-  );
+  const result = await pool.query('DELETE FROM applications WHERE id = $1 RETURNING id', [id]);
 
   if (!result.rows.length) {
     return res.status(404).json({

@@ -8,38 +8,30 @@ export const shorthands = undefined;
  * @param run {() => void | undefined}
  * @returns {Promise<void> | void}
  */
-exports.up = (pgm) => {
-  pgm.createTable('users', {
+export const up = (pgm) => {
+  pgm.createTable('authentications', {
     id: {
-      type: 'serial',
+      type: 'varchar(13)',
       primaryKey: true,
     },
-    name: {
-      type: 'varchar(50)',
+    user_id: {
+      type: 'varchar(13)',
       notNull: true,
+      references: 'users(id)',
+      onUpdate: 'CASCADE',
+      onDelete: 'CASCADE',
     },
-    email: {
-      type: 'varchar(100)',
+    token: {
+      type: 'text',
       unique: true,
       notNull: true,
     },
-    password: {
-      type: 'varchar(255)',
+    expired_at: {
+      type: 'timestamptz',
       notNull: true,
-    },
-    role: {
-      type: 'varchar(20)',
-      notNull: true,
-      default: 'user',
-      check: "role IN ('user', 'admin')",
     },
     created_at: {
-      type: 'timestamp',
-      notNull: true,
-      default: pgm.func('current_timestamp'),
-    },
-    updated_at: {
-      type: 'timestamp',
+      type: 'timestamptz',
       notNull: true,
       default: pgm.func('current_timestamp'),
     },
@@ -51,6 +43,6 @@ exports.up = (pgm) => {
  * @param run {() => void | undefined}
  * @returns {Promise<void> | void}
  */
-exports.down = (pgm) => {
-  pgm.dropTable('users');
+export const down = (pgm) => {
+  pgm.dropTable('authentications');
 };

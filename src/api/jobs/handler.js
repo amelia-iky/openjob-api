@@ -1,5 +1,5 @@
 const pool = require('../../database/pool');
-const { nanoid } = require('nanoid');
+const nanoid = require('../../utils/nanoid');
 
 const getJobsHandler = async (req, res) => {
   const { title, 'company-name': companyName } = req.query;
@@ -54,9 +54,7 @@ const getJobByIdHandler = async (req, res) => {
 const getJobsByCompanyHandler = async (req, res) => {
   const { companyId } = req.params;
 
-  const result = await pool.query('SELECT * FROM jobs WHERE company_id = $1', [
-    companyId,
-  ]);
+  const result = await pool.query('SELECT * FROM jobs WHERE company_id = $1', [companyId]);
 
   res.json({
     status: 'success',
@@ -69,9 +67,7 @@ const getJobsByCompanyHandler = async (req, res) => {
 const getJobsByCategoryHandler = async (req, res) => {
   const { categoryId } = req.params;
 
-  const result = await pool.query('SELECT * FROM jobs WHERE category_id = $1', [
-    categoryId,
-  ]);
+  const result = await pool.query('SELECT * FROM jobs WHERE category_id = $1', [categoryId]);
 
   res.json({
     status: 'success',
@@ -82,16 +78,60 @@ const getJobsByCategoryHandler = async (req, res) => {
 };
 
 const addJobHandler = async (req, res) => {
-  const { title, company_id, category_id } = req.body;
+  const {
+    company_id,
+    category_id,
+    title,
+    description,
+    job_type,
+    experience_level,
+    location_type,
+    location_city,
+    salary_min,
+    salary_max,
+    is_salary_visible,
+    status,
+  } = req.body;
 
-  const id = `job-${nanoid(10)}`;
+  const id = nanoid();
 
   await pool.query(
     `
-      INSERT INTO jobs (id, title, company_id, category_id)
-      VALUES ($1, $2, $3, $4)
-    `,
-    [id, title, company_id, category_id],
+  INSERT INTO jobs (
+    id,
+    company_id,
+    category_id,
+    title,
+    description,
+    job_type,
+    experience_level,
+    location_type,
+    location_city,
+    salary_min,
+    salary_max,
+    is_salary_visible,
+    status
+  )
+  VALUES (
+    $1, $2, $3, $4, $5, $6, $7,
+    $8, $9, $10, $11, $12, $13
+  )
+`,
+    [
+      id,
+      company_id,
+      category_id,
+      title,
+      description,
+      job_type,
+      experience_level,
+      location_type,
+      location_city,
+      salary_min,
+      salary_max,
+      is_salary_visible,
+      status,
+    ]
   );
 
   res.status(201).json({
@@ -105,38 +145,54 @@ const addJobHandler = async (req, res) => {
 
 const updateJobHandler = async (req, res) => {
   const { id } = req.params;
-  const { title } = req.body;
 
-  const result = await pool.query(
-    `
+  try {
+    const fields = [];
+    const values = [];
+
+    Object.entries(req.body).forEach(([key, value], index) => {
+      fields.push(`${key} = $${index + 1}`);
+      values.push(value);
+    });
+
+    values.push(id);
+
+    const query = `
       UPDATE jobs
-      SET title = $1
-      WHERE id = $2
+      SET
+        ${fields.join(', ')},
+        updated_at = CURRENT_TIMESTAMP
+      WHERE id = $${values.length}
       RETURNING id
-    `,
-    [title, id],
-  );
+    `;
 
-  if (!result.rows.length) {
-    return res.status(404).json({
-      status: 'failed',
-      message: 'Job tidak ditemukan',
+    const result = await pool.query(query, values);
+
+    if (!result.rows.length) {
+      return res.status(404).json({
+        status: 'failed',
+        message: 'Job tidak ditemukan',
+      });
+    }
+
+    return res.status(200).json({
+      status: 'success',
+      message: 'Job berhasil diupdate',
+    });
+  } catch (error) {
+    console.error(error);
+
+    return res.status(500).json({
+      status: 'error',
+      message: 'Terjadi kegagalan pada server',
     });
   }
-
-  res.json({
-    status: 'success',
-    message: 'Job berhasil diupdate',
-  });
 };
 
 const deleteJobHandler = async (req, res) => {
   const { id } = req.params;
 
-  const result = await pool.query(
-    'DELETE FROM jobs WHERE id = $1 RETURNING id',
-    [id],
-  );
+  const result = await pool.query('DELETE FROM jobs WHERE id = $1 RETURNING id', [id]);
 
   if (!result.rows.length) {
     return res.status(404).json({

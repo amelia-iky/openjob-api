@@ -2,10 +2,9 @@ const pool = require('../../database/pool');
 
 const getProfileHandler = async (req, res) => {
   try {
-    const result = await pool.query(
-      'SELECT id, email, name, name, role FROM users WHERE id = $1',
-      [req.user.id],
-    );
+    const result = await pool.query('SELECT id, email, name, name, role FROM users WHERE id = $1', [
+      req.user.id,
+    ]);
 
     if (!result.rows.length) {
       return res.status(404).json({

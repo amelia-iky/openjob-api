@@ -15,9 +15,7 @@ const getBookmarksHandler = async (req, res) => {
 const getBookmarkByIdHandler = async (req, res) => {
   const { id } = req.params;
 
-  const result = await pool.query('SELECT * FROM bookmarks WHERE id = $1', [
-    id,
-  ]);
+  const result = await pool.query('SELECT * FROM bookmarks WHERE id = $1', [id]);
 
   if (!result.rows.length) {
     return res.status(404).json({
@@ -35,10 +33,7 @@ const getBookmarkByIdHandler = async (req, res) => {
 const getBookmarksByUserIdHandler = async (req, res) => {
   const { userId } = req.params;
 
-  const result = await pool.query(
-    'SELECT * FROM bookmarks WHERE user_id = $1',
-    [userId],
-  );
+  const result = await pool.query('SELECT * FROM bookmarks WHERE user_id = $1', [userId]);
 
   return res.status(200).json({
     status: 'success',
@@ -58,7 +53,7 @@ const addBookmarkHandler = async (req, res) => {
       INSERT INTO bookmarks (id, user_id, job_id)
       VALUES ($1, $2, $3)
     `,
-    [id, req.user.id, jobId],
+    [id, req.user.id, jobId]
   );
 
   return res.status(201).json({

@@ -1,16 +1,20 @@
 const pool = require('../../database/pool');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-
-const invalidTokens = [];
+const nanoid = require('../../utils/nanoid');
 
 const loginHandler = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const result = await pool.query('SELECT * FROM users WHERE email = $1', [
-      email,
-    ]);
+    const result = await pool.query(
+      `
+      SELECT id, email, password, role
+      FROM users
+      WHERE email = $1
+      `,
+      [email]
+    );
 
     if (!result.rows.length) {
       return res.status(401).json({
@@ -31,14 +35,33 @@ const loginHandler = async (req, res) => {
     }
 
     const accessToken = jwt.sign(
-      { id: user.id },
+      {
+        id: user.id,
+        role: user.role,
+      },
       process.env.ACCESS_TOKEN_KEY,
-      { expiresIn: '3h' },
+      {
+        expiresIn: '3h',
+      }
     );
 
     const refreshToken = jwt.sign(
-      { id: user.id },
+      {
+        id: user.id,
+      },
       process.env.REFRESH_TOKEN_KEY,
+      {
+        expiresIn: '7d',
+      }
+    );
+
+    await pool.query(
+      `
+      INSERT INTO authentications
+      (id, user_id, token, expired_at)
+      VALUES ($1, $2, $3, NOW() + interval '7 days')
+      `,
+      [nanoid(), user.id, refreshToken]
     );
 
     return res.status(200).json({
@@ -50,9 +73,11 @@ const loginHandler = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error(error);
+
     return res.status(500).json({
-      status: 'failed',
-      message: error.message,
+      status: 'error',
+      message: 'Terjadi kegagalan pada server',
     });
   }
 };
@@ -67,20 +92,33 @@ const refreshAuthenticationHandler = async (req, res) => {
     });
   }
 
-  if (invalidTokens.includes(refreshToken)) {
-    return res.status(400).json({
-      status: 'failed',
-      message: 'Refresh token tidak valid',
-    });
-  }
-
   try {
+    const tokenResult = await pool.query(
+      `
+      SELECT token
+      FROM authentications
+      WHERE token = $1
+      `,
+      [refreshToken]
+    );
+
+    if (!tokenResult.rows.length) {
+      return res.status(400).json({
+        status: 'failed',
+        message: 'Refresh token tidak valid',
+      });
+    }
+
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_KEY);
 
     const accessToken = jwt.sign(
-      { id: decoded.id },
+      {
+        id: decoded.id,
+      },
       process.env.ACCESS_TOKEN_KEY,
-      { expiresIn: '3h' },
+      {
+        expiresIn: '3h',
+      }
     );
 
     return res.status(200).json({
@@ -90,6 +128,8 @@ const refreshAuthenticationHandler = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error(error);
+
     return res.status(400).json({
       status: 'failed',
       message: 'Refresh token tidak valid',
@@ -108,18 +148,32 @@ const deleteAuthenticationHandler = async (req, res) => {
   }
 
   try {
-    jwt.verify(refreshToken, process.env.REFRESH_TOKEN_KEY);
+    const result = await pool.query(
+      `
+      DELETE FROM authentications
+      WHERE token = $1
+      RETURNING id
+      `,
+      [refreshToken]
+    );
 
-    invalidTokens.push(refreshToken);
+    if (!result.rows.length) {
+      return res.status(400).json({
+        status: 'failed',
+        message: 'Refresh token tidak valid',
+      });
+    }
 
     return res.status(200).json({
       status: 'success',
       message: 'Refresh token berhasil dihapus',
     });
   } catch (error) {
-    return res.status(400).json({
-      status: 'failed',
-      message: 'Refresh token tidak valid',
+    console.error(error);
+
+    return res.status(500).json({
+      status: 'error',
+      message: 'Terjadi kegagalan pada server',
     });
   }
 };

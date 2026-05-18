@@ -1,5 +1,5 @@
 const pool = require('../../database/pool');
-const { nanoid } = require('nanoid');
+const nanoid = require('../../utils/nanoid');
 
 const getCategoriesHandler = async (req, res) => {
   const result = await pool.query('SELECT * FROM categories');
@@ -15,9 +15,7 @@ const getCategoriesHandler = async (req, res) => {
 const getCategoryByIdHandler = async (req, res) => {
   const { id } = req.params;
 
-  const result = await pool.query('SELECT * FROM categories WHERE id = $1', [
-    id,
-  ]);
+  const result = await pool.query('SELECT * FROM categories WHERE id = $1', [id]);
 
   if (!result.rows.length) {
     return res.status(404).json({
@@ -35,18 +33,16 @@ const getCategoryByIdHandler = async (req, res) => {
 const addCategoryHandler = async (req, res) => {
   const { name } = req.body;
 
-  const id = `category-${nanoid(10)}`;
+  const id = nanoid();
 
-  await pool.query('INSERT INTO categories (id, name) VALUES ($1, $2)', [
-    id,
-    name,
-  ]);
+  await pool.query('INSERT INTO categories (id, name) VALUES ($1, $2)', [id, name]);
 
   res.status(201).json({
     status: 'success',
     message: 'Category berhasil ditambahkan',
     data: {
       id,
+      name,
     },
   });
 };
@@ -55,10 +51,10 @@ const updateCategoryHandler = async (req, res) => {
   const { id } = req.params;
   const { name } = req.body;
 
-  const result = await pool.query(
-    'UPDATE categories SET name = $1 WHERE id = $2 RETURNING id',
-    [name, id],
-  );
+  const result = await pool.query('UPDATE categories SET name = $1 WHERE id = $2 RETURNING id', [
+    name,
+    id,
+  ]);
 
   if (!result.rows.length) {
     return res.status(404).json({
@@ -76,10 +72,7 @@ const updateCategoryHandler = async (req, res) => {
 const deleteCategoryHandler = async (req, res) => {
   const { id } = req.params;
 
-  const result = await pool.query(
-    'DELETE FROM categories WHERE id = $1 RETURNING id',
-    [id],
-  );
+  const result = await pool.query('DELETE FROM categories WHERE id = $1 RETURNING id', [id]);
 
   if (!result.rows.length) {
     return res.status(404).json({

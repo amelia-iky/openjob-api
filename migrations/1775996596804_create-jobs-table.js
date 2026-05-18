@@ -11,20 +11,20 @@ export const shorthands = undefined;
 export const up = (pgm) => {
   pgm.createTable('jobs', {
     id: {
-      type: 'serial',
+      type: 'varchar(13)',
       primaryKey: true,
     },
     company_id: {
-      type: 'integer',
+      type: 'varchar(13)',
       notNull: true,
       references: 'companies(id)',
-      onDelete: 'cascade',
+      onDelete: 'CASCADE',
     },
     category_id: {
-      type: 'integer',
+      type: 'varchar(13)',
       notNull: true,
       references: 'categories(id)',
-      onDelete: 'cascade',
+      onDelete: 'CASCADE',
     },
     title: {
       type: 'varchar(100)',
@@ -73,12 +73,12 @@ export const up = (pgm) => {
       check: "status IN ('open', 'closed')",
     },
     created_at: {
-      type: 'timestamp',
+      type: 'timestamptz',
       notNull: true,
       default: pgm.func('current_timestamp'),
     },
     updated_at: {
-      type: 'timestamp',
+      type: 'timestamptz',
       notNull: true,
       default: pgm.func('current_timestamp'),
     },

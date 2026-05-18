@@ -1,8 +1,8 @@
 const Joi = require('joi');
 
 const AuthSchema = Joi.object({
-  email: Joi.string().email().required(),
-  password: Joi.string().min(6).required(),
-}).unknown();
+  email: Joi.string().trim().email().required(),
+  password: Joi.string().strict().min(6).required(),
+});
 
 module.exports = AuthSchema;

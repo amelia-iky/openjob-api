@@ -11,11 +11,11 @@ export const shorthands = undefined;
 export const up = (pgm) => {
   pgm.createTable('companies', {
     id: {
-      type: 'serial',
+      type: 'varchar(13)',
       primaryKey: true,
     },
     name: {
-      type: 'varchar(50)',
+      type: 'varchar(100)',
       notNull: true,
     },
     location: {
@@ -27,12 +27,12 @@ export const up = (pgm) => {
       notNull: true,
     },
     created_at: {
-      type: 'timestamp',
+      type: 'timestamptz',
       notNull: true,
       default: pgm.func('current_timestamp'),
     },
     updated_at: {
-      type: 'timestamp',
+      type: 'timestamptz',
       notNull: true,
       default: pgm.func('current_timestamp'),
     },

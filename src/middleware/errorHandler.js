@@ -1,7 +1,9 @@
 const errorHandler = (err, req, res, next) => {
+  console.error(err);
+
   res.status(500).json({
-    status: 'failed',
-    message: err.message,
+    status: 'error',
+    message: 'Terjadi kegagalan pada server',
   });
 };
 

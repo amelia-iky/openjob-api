@@ -47,7 +47,7 @@ export const up = (pgm) => {
     location_type: {
       type: 'varchar(20)',
       notNull: true,
-      check: "location_type IN ('remote', 'on-site', 'hybrid')",
+      check: "location_type IN ('remote', 'onsite', 'hybrid')",
     },
     location_city: {
       type: 'varchar(100)',

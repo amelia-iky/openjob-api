@@ -1,26 +1,36 @@
 exports.up = (pgm) => {
   pgm.createTable('users', {
     id: {
-      type: 'VARCHAR(50)',
+      type: 'serial',
       primaryKey: true,
     },
     name: {
-      type: 'TEXT',
+      type: 'varchar(100)',
       notNull: true,
     },
     email: {
-      type: 'TEXT',
+      type: 'varchar(100)',
       unique: true,
       notNull: true,
     },
     password: {
-      type: 'TEXT',
+      type: 'varchar(255)',
       notNull: true,
     },
     role: {
-      type: 'TEXT',
+      type: 'varchar(50)',
       notNull: true,
       default: 'user',
+    },
+    created_at: {
+      type: 'timestamp',
+      notNull: true,
+      default: pgm.func('current_timestamp'),
+    },
+    updated_at: {
+      type: 'timestamp',
+      notNull: true,
+      default: pgm.func('current_timestamp'),
     },
   });
 };

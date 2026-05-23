@@ -8,10 +8,10 @@ export const JobSchema = Joi.object({
   job_type: Joi.string().valid('full-time', 'part-time', 'contract', 'internship').required(),
   experience_level: Joi.string().valid('entry', 'mid', 'senior').required(),
   location_type: Joi.string().valid('remote', 'onsite', 'hybrid').required(),
-  location_city: Joi.string().trim().min(2).max(100).required(),
-  salary_min: Joi.number().precision(2).strict().min(0).required(),
-  salary_max: Joi.number().precision(2).strict().min(Joi.ref('salary_min')).required(),
-  is_salary_visible: Joi.boolean().strict().required(),
+  location_city: Joi.string().trim().min(2).max(100),
+  salary_min: Joi.number().precision(2).strict().min(0),
+  salary_max: Joi.number().precision(2).strict().min(Joi.ref('salary_min')),
+  is_salary_visible: Joi.boolean().strict(),
   status: Joi.string().valid('open', 'closed').required(),
 });
 

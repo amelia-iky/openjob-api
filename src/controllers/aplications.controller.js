@@ -56,7 +56,7 @@ export const getApplicationsByJobIdHandler = async (req, res) => {
 
 export const addApplicationHandler = async (req, res) => {
   const { job_id } = req.body;
-  const id = `application-${nanoid()}`;
+  const id = nanoid();
 
   await pool.query(
     `

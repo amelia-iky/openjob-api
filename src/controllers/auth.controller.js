@@ -18,14 +18,14 @@ const loginHandler = async (req, res) => {
   );
 
   if (!result.rows.length) {
-    throw new AppError('Email atau password salah', 401);
+    throw new AppError('Email or password is incorrect', 401);
   }
 
   const user = result.rows[0];
   const match = await bcrypt.compare(password, user.password);
 
   if (!match) {
-    throw new AppError('Email atau password salah', 401);
+    throw new AppError('Email or password is incorrect', 401);
   }
 
   const accessToken = jwt.sign({ id: user.id, role: user.role }, process.env.ACCESS_TOKEN_KEY, {

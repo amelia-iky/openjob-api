@@ -43,7 +43,7 @@ export const getBookmarksByUserIdHandler = async (req, res) => {
 
 export const addBookmarkHandler = async (req, res) => {
   const { jobId } = req.params;
-  const id = `bookmark-${nanoid()}`;
+  const id = nanoid();
 
   await pool.query(
     `

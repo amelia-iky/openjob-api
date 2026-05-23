@@ -1,19 +1,15 @@
-const express = require('express');
-
-const auth = require('../../middleware/auth');
-
-const {
+import express from 'express';
+import {
   getProfileHandler,
   getProfileApplicationsHandler,
   getProfileBookmarksHandler,
-} = require('./handler');
+} from '../controllers/profile.controller.js';
+import auth from '../middleware/auth.js';
 
 const router = express.Router();
 
 router.get('/profile', auth, getProfileHandler);
-
 router.get('/profile/applications', auth, getProfileApplicationsHandler);
-
 router.get('/profile/bookmarks', auth, getProfileBookmarksHandler);
 
-module.exports = router;
+export default router;

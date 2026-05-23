@@ -1,6 +1,6 @@
-const pool = require('../../database/pool');
+import pool from '../database/pool.js';
 
-const getProfileHandler = async (req, res) => {
+export const getProfileHandler = async (req, res) => {
   try {
     const result = await pool.query('SELECT id, email, name, name, role FROM users WHERE id = $1', [
       req.user.id,
@@ -32,7 +32,7 @@ const getProfileHandler = async (req, res) => {
   }
 };
 
-const getProfileApplicationsHandler = async (req, res) => {
+export const getProfileApplicationsHandler = async (req, res) => {
   return res.status(200).json({
     status: 'success',
     data: {
@@ -41,17 +41,11 @@ const getProfileApplicationsHandler = async (req, res) => {
   });
 };
 
-const getProfileBookmarksHandler = async (req, res) => {
+export const getProfileBookmarksHandler = async (req, res) => {
   return res.status(200).json({
     status: 'success',
     data: {
       bookmarks: [],
     },
   });
-};
-
-module.exports = {
-  getProfileHandler,
-  getProfileApplicationsHandler,
-  getProfileBookmarksHandler,
 };

@@ -1,7 +1,7 @@
-const pool = require('../../database/pool');
-const { nanoid } = require('nanoid');
+import { nanoid } from 'nanoid';
+import pool from '../database/pool.js';
 
-const getBookmarksHandler = async (req, res) => {
+export const getBookmarksHandler = async (req, res) => {
   const result = await pool.query('SELECT * FROM bookmarks');
 
   return res.status(200).json({
@@ -12,7 +12,7 @@ const getBookmarksHandler = async (req, res) => {
   });
 };
 
-const getBookmarkByIdHandler = async (req, res) => {
+export const getBookmarkByIdHandler = async (req, res) => {
   const { id } = req.params;
 
   const result = await pool.query('SELECT * FROM bookmarks WHERE id = $1', [id]);
@@ -30,7 +30,7 @@ const getBookmarkByIdHandler = async (req, res) => {
   });
 };
 
-const getBookmarksByUserIdHandler = async (req, res) => {
+export const getBookmarksByUserIdHandler = async (req, res) => {
   const { userId } = req.params;
 
   const result = await pool.query('SELECT * FROM bookmarks WHERE user_id = $1', [userId]);
@@ -43,7 +43,7 @@ const getBookmarksByUserIdHandler = async (req, res) => {
   });
 };
 
-const addBookmarkHandler = async (req, res) => {
+export const addBookmarkHandler = async (req, res) => {
   const { jobId } = req.params;
 
   const id = `bookmark-${nanoid(10)}`;
@@ -65,7 +65,7 @@ const addBookmarkHandler = async (req, res) => {
   });
 };
 
-const deleteBookmarkHandler = async (req, res) => {
+export const deleteBookmarkHandler = async (req, res) => {
   const { jobId } = req.params;
 
   await pool.query('DELETE FROM bookmarks WHERE user_id = $1 AND job_id = $2', [
@@ -77,12 +77,4 @@ const deleteBookmarkHandler = async (req, res) => {
     status: 'success',
     message: 'Bookmark berhasil dihapus',
   });
-};
-
-module.exports = {
-  getBookmarksHandler,
-  getBookmarkByIdHandler,
-  getBookmarksByUserIdHandler,
-  addBookmarkHandler,
-  deleteBookmarkHandler,
 };

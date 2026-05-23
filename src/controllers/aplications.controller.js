@@ -1,7 +1,7 @@
-const pool = require('../../database/pool');
-const { nanoid } = require('nanoid');
+import { nanoid } from 'nanoid';
+import pool from '../database/pool.js';
 
-const getApplicationsHandler = async (req, res) => {
+export const getApplicationsHandler = async (req, res) => {
   const result = await pool.query('SELECT * FROM applications');
 
   return res.status(200).json({
@@ -12,7 +12,7 @@ const getApplicationsHandler = async (req, res) => {
   });
 };
 
-const getApplicationByIdHandler = async (req, res) => {
+export const getApplicationByIdHandler = async (req, res) => {
   const { id } = req.params;
 
   const result = await pool.query('SELECT * FROM applications WHERE id = $1', [id]);
@@ -30,7 +30,7 @@ const getApplicationByIdHandler = async (req, res) => {
   });
 };
 
-const getApplicationsByUserIdHandler = async (req, res) => {
+export const getApplicationsByUserIdHandler = async (req, res) => {
   const { userId } = req.params;
 
   const result = await pool.query('SELECT * FROM applications WHERE user_id = $1', [userId]);
@@ -43,7 +43,7 @@ const getApplicationsByUserIdHandler = async (req, res) => {
   });
 };
 
-const getApplicationsByJobIdHandler = async (req, res) => {
+export const getApplicationsByJobIdHandler = async (req, res) => {
   const { jobId } = req.params;
 
   const result = await pool.query('SELECT * FROM applications WHERE job_id = $1', [jobId]);
@@ -56,7 +56,7 @@ const getApplicationsByJobIdHandler = async (req, res) => {
   });
 };
 
-const addApplicationHandler = async (req, res) => {
+export const addApplicationHandler = async (req, res) => {
   const { job_id } = req.body;
 
   const id = `application-${nanoid(10)}`;
@@ -78,7 +78,7 @@ const addApplicationHandler = async (req, res) => {
   });
 };
 
-const updateApplicationStatusHandler = async (req, res) => {
+export const updateApplicationStatusHandler = async (req, res) => {
   const { id } = req.params;
 
   const result = await pool.query('SELECT id FROM applications WHERE id = $1', [id]);
@@ -96,7 +96,7 @@ const updateApplicationStatusHandler = async (req, res) => {
   });
 };
 
-const deleteApplicationHandler = async (req, res) => {
+export const deleteApplicationHandler = async (req, res) => {
   const { id } = req.params;
 
   const result = await pool.query('DELETE FROM applications WHERE id = $1 RETURNING id', [id]);
@@ -112,14 +112,4 @@ const deleteApplicationHandler = async (req, res) => {
     status: 'success',
     message: 'Application berhasil dihapus',
   });
-};
-
-module.exports = {
-  getApplicationsHandler,
-  getApplicationByIdHandler,
-  getApplicationsByUserIdHandler,
-  getApplicationsByJobIdHandler,
-  addApplicationHandler,
-  updateApplicationStatusHandler,
-  deleteApplicationHandler,
 };

@@ -1,14 +1,15 @@
 {
-  "name": "openjob-restful-api-versi-1",
+  "name": "openjob-api",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/app.js",
+  "type": "module",
   "scripts": {
     "start": "node src/app.js",
     "dev": "nodemon src/app.js",
-    "migrate:up": "node-pg-migrate up",
-    "migrate:down": "node-pg-migrate down",
-    "migrate:create": "node-pg-migrate create",
-    "migrate:fresh": "node -r dotenv/config ./node_modules/.bin/node-pg-migrate down -a && node -r dotenv/config ./node_modules/.bin/node-pg-migrate up"
+    "migrate:up": "node-pg-migrate -m src/migrations up",
+    "migrate:down": "node-pg-migrate -m src/migrations down",
+    "migrate:create": "node-pg-migrate -m src/migrations create",
+    "migrate:fresh": "node -r dotenv/config ./node_modules/.bin/node-pg-migrate -m src/migrations down -a && node -r dotenv/config ./node_modules/.bin/node-pg-migrate -m src/migrations up"
   },
   "keywords": [],
   "author": "",
@@ -27,6 +28,5 @@
   "devDependencies": {
     "node-pg-migrate": "^8.0.4",
     "nodemon": "^3.1.14"
-  },
-  "description": ""
+  }
 }

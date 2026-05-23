@@ -1,5 +1,5 @@
-const pool = require('../../database/pool');
-const nanoid = require('../../utils/nanoid');
+import { nanoid } from 'nanoid';
+import pool from '../database/pool.js';
 
 const getCompaniesHandler = async (req, res) => {
   const result = await pool.query('SELECT * FROM companies');
@@ -100,7 +100,7 @@ const deleteCompanyHandler = async (req, res) => {
   });
 };
 
-module.exports = {
+export {
   getCompaniesHandler,
   getCompanyByIdHandler,
   addCompanyHandler,

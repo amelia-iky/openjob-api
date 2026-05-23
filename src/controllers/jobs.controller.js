@@ -1,5 +1,5 @@
-const pool = require('../../database/pool');
-const nanoid = require('../../utils/nanoid');
+import { nanoid } from 'nanoid';
+import pool from '../database/pool.js';
 
 const getJobsHandler = async (req, res) => {
   const { title, 'company-name': companyName } = req.query;
@@ -207,7 +207,7 @@ const deleteJobHandler = async (req, res) => {
   });
 };
 
-module.exports = {
+export {
   getJobsHandler,
   getJobByIdHandler,
   getJobsByCompanyHandler,

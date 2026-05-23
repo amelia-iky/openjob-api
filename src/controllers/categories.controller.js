@@ -1,5 +1,5 @@
-const pool = require('../../database/pool');
-const nanoid = require('../../utils/nanoid');
+import { nanoid } from 'nanoid';
+import pool from '../database/pool.js';
 
 const getCategoriesHandler = async (req, res) => {
   const result = await pool.query('SELECT * FROM categories');
@@ -87,7 +87,7 @@ const deleteCategoryHandler = async (req, res) => {
   });
 };
 
-module.exports = {
+export {
   getCategoriesHandler,
   getCategoryByIdHandler,
   addCategoryHandler,

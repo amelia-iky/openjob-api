@@ -1,7 +1,8 @@
-const pool = require('../../database/pool');
-const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken');
-const nanoid = require('../../utils/nanoid');
+import 'dotenv/config';
+import { nanoid } from 'nanoid';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import pool from '../database/pool.js';
 
 const loginHandler = async (req, res) => {
   const { email, password } = req.body;
@@ -178,7 +179,7 @@ const deleteAuthenticationHandler = async (req, res) => {
   }
 };
 
-module.exports = {
+export {
   loginHandler,
   refreshAuthenticationHandler,
   deleteAuthenticationHandler,

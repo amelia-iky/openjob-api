@@ -1,6 +1,5 @@
-const express = require('express');
-
-const {
+import express from 'express';
+import {
   getApplicationsHandler,
   getApplicationByIdHandler,
   getApplicationsByUserIdHandler,
@@ -8,12 +7,10 @@ const {
   addApplicationHandler,
   updateApplicationStatusHandler,
   deleteApplicationHandler,
-} = require('./handler');
-
-const auth = require('../../middleware/auth');
-const validate = require('../../middleware/validate');
-
-const ApplicationSchema = require('../../validations/applicationsSchema');
+} from '../controllers/aplications.controller.js';
+import auth from '../middleware/auth.js';
+import validate from '../middleware/validate.js';
+import { ApplicationSchema } from '../validations/applicationsSchema.js';
 
 const router = express.Router();
 
@@ -25,15 +22,10 @@ router.get('/applications/user/:userId', auth, getApplicationsByUserIdHandler);
 
 router.get('/applications/job/:jobId', auth, getApplicationsByJobIdHandler);
 
-router.post(
-  '/applications',
-  auth,
-  validate(ApplicationSchema),
-  addApplicationHandler,
-);
+router.post('/applications', auth, validate(ApplicationSchema), addApplicationHandler);
 
 router.put('/applications/:id', auth, updateApplicationStatusHandler);
 
 router.delete('/applications/:id', auth, deleteApplicationHandler);
 
-module.exports = router;
+export default router;

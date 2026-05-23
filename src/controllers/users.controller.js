@@ -1,16 +1,13 @@
-const pool = require('../../database/pool');
-const bcrypt = require('bcrypt');
-const nanoid = require('../../utils/nanoid');
-const UserSchema = require('../../validations/usersSchema');
+import { nanoid } from 'nanoid';
+import bcrypt from 'bcrypt';
+import pool from '../database/pool.js';
 
-const addUserHandler = async (req, res) => {
+export const addUser = async (req, res) => {
   const { name, email, password, role } = req.body;
+  const hashedPassword = await bcrypt.hash(password, 10);
+  const id = nanoid();
 
   try {
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const id = nanoid();
-
     await pool.query(
       `
       INSERT INTO users
@@ -22,7 +19,7 @@ const addUserHandler = async (req, res) => {
 
     return res.status(201).json({
       status: 'success',
-      message: 'User berhasil ditambahkan',
+      message: 'User has been created',
       data: {
         id,
         name,
@@ -47,7 +44,7 @@ const addUserHandler = async (req, res) => {
   }
 };
 
-const getUserByIdHandler = async (req, res) => {
+export const getUserById = async (req, res) => {
   const { id } = req.params;
 
   try {
@@ -71,9 +68,4 @@ const getUserByIdHandler = async (req, res) => {
       message: 'Terjadi kegagalan pada server',
     });
   }
-};
-
-module.exports = {
-  addUserHandler,
-  getUserByIdHandler,
 };

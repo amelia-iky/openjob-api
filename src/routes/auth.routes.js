@@ -1,11 +1,11 @@
-const express = require('express');
-const {
+import express from 'express';
+import {
   loginHandler,
   refreshAuthenticationHandler,
   deleteAuthenticationHandler,
-} = require('./handler');
-const validate = require('../../middleware/validate');
-const AuthSchema = require('../../validations/authSchema');
+} from '../controllers/auth.controller.js';
+import validate from '../middleware/validate.js';
+import { AuthSchema } from '../validations/authSchema.js';
 
 const router = express.Router();
 
@@ -13,4 +13,4 @@ router.post('/authentications', validate(AuthSchema), loginHandler);
 router.put('/authentications', refreshAuthenticationHandler);
 router.delete('/authentications', deleteAuthenticationHandler);
 
-module.exports = router;
+export default router;

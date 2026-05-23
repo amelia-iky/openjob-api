@@ -1,14 +1,14 @@
-const express = require('express');
-const {
+import express from 'express';
+import {
   getCompaniesHandler,
   getCompanyByIdHandler,
   addCompanyHandler,
   updateCompanyHandler,
   deleteCompanyHandler,
-} = require('./handler');
-const auth = require('../../middleware/auth');
-const validate = require('../../middleware/validate');
-const CompanySchema = require('../../validations/companiesSchema');
+} from '../controllers/companies.controller.js';
+import auth from '../middleware/auth.js';
+import validate from '../middleware/validate.js';
+import { CompanySchema } from '../validations/companiesSchema.js';
 
 const router = express.Router();
 
@@ -18,4 +18,4 @@ router.post('/companies', auth, validate(CompanySchema), addCompanyHandler);
 router.put('/companies/:id', auth, updateCompanyHandler);
 router.delete('/companies/:id', auth, deleteCompanyHandler);
 
-module.exports = router;
+export default router;

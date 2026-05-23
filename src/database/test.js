@@ -1,5 +1,5 @@
-require('dotenv').config();
-const pool = require('./pool');
+import 'dotenv/config';
+import pool from './pool.js';
 
 pool.query('SELECT NOW()', (err, res) => {
   if (err) {

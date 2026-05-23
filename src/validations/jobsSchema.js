@@ -1,6 +1,6 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
-const JobSchema = Joi.object({
+export const JobSchema = Joi.object({
   category_id: Joi.string().length(13).required(),
   company_id: Joi.string().length(13).required(),
   title: Joi.string().trim().min(3).max(100).required(),
@@ -15,7 +15,7 @@ const JobSchema = Joi.object({
   status: Joi.string().valid('open', 'closed').required(),
 });
 
-const UpdateJobSchema = Joi.object({
+export const UpdateJobSchema = Joi.object({
   company_id: Joi.string().length(13),
   category_id: Joi.string().length(13),
   title: Joi.string().trim().min(3).max(100),
@@ -28,8 +28,3 @@ const UpdateJobSchema = Joi.object({
   salary_max: Joi.number().precision(2).min(0),
   status: Joi.string().valid('draft', 'published', 'closed'),
 }).min(1);
-
-module.exports = {
-  JobSchema,
-  UpdateJobSchema,
-};

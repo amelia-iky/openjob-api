@@ -1,5 +1,6 @@
-import { nanoid } from 'nanoid';
+import nanoid from '../utils/nanoid.js';
 import pool from '../database/pool.js';
+import { AppError } from '../utils/AppError.js';
 
 const getJobsHandler = async (req, res) => {
   const { title, 'company-name': companyName } = req.query;
@@ -25,7 +26,7 @@ const getJobsHandler = async (req, res) => {
 
   const result = await pool.query(query, values);
 
-  res.json({
+  return res.json({
     status: 'success',
     data: {
       jobs: result.rows,
@@ -39,10 +40,7 @@ const getJobByIdHandler = async (req, res) => {
   const result = await pool.query('SELECT * FROM jobs WHERE id = $1', [id]);
 
   if (!result.rows.length) {
-    return res.status(404).json({
-      status: 'failed',
-      message: 'Job tidak ditemukan',
-    });
+    throw new AppError('Job not found', 404);
   }
 
   return res.json({
@@ -56,7 +54,7 @@ const getJobsByCompanyHandler = async (req, res) => {
 
   const result = await pool.query('SELECT * FROM jobs WHERE company_id = $1', [companyId]);
 
-  res.json({
+  return res.json({
     status: 'success',
     data: {
       jobs: result.rows,
@@ -69,7 +67,7 @@ const getJobsByCategoryHandler = async (req, res) => {
 
   const result = await pool.query('SELECT * FROM jobs WHERE category_id = $1', [categoryId]);
 
-  res.json({
+  return res.json({
     status: 'success',
     data: {
       jobs: result.rows,
@@ -134,7 +132,7 @@ const addJobHandler = async (req, res) => {
     ]
   );
 
-  res.status(201).json({
+  return res.status(201).json({
     status: 'success',
     message: 'Job berhasil ditambahkan',
     data: {
@@ -145,48 +143,35 @@ const addJobHandler = async (req, res) => {
 
 const updateJobHandler = async (req, res) => {
   const { id } = req.params;
+  const fields = [];
+  const values = [];
 
-  try {
-    const fields = [];
-    const values = [];
+  Object.entries(req.body).forEach(([key, value], index) => {
+    fields.push(`${key} = $${index + 1}`);
+    values.push(value);
+  });
 
-    Object.entries(req.body).forEach(([key, value], index) => {
-      fields.push(`${key} = $${index + 1}`);
-      values.push(value);
-    });
+  values.push(id);
 
-    values.push(id);
+  const query = `
+    UPDATE jobs
+    SET
+      ${fields.join(', ')},
+      updated_at = CURRENT_TIMESTAMP
+    WHERE id = $${values.length}
+    RETURNING id
+  `;
 
-    const query = `
-      UPDATE jobs
-      SET
-        ${fields.join(', ')},
-        updated_at = CURRENT_TIMESTAMP
-      WHERE id = $${values.length}
-      RETURNING id
-    `;
+  const result = await pool.query(query, values);
 
-    const result = await pool.query(query, values);
-
-    if (!result.rows.length) {
-      return res.status(404).json({
-        status: 'failed',
-        message: 'Job tidak ditemukan',
-      });
-    }
-
-    return res.status(200).json({
-      status: 'success',
-      message: 'Job berhasil diupdate',
-    });
-  } catch (error) {
-    console.error(error);
-
-    return res.status(500).json({
-      status: 'error',
-      message: 'Terjadi kegagalan pada server',
-    });
+  if (!result.rows.length) {
+    throw new AppError('Job not found', 404);
   }
+
+  return res.status(200).json({
+    status: 'success',
+    message: 'Job berhasil diupdate',
+  });
 };
 
 const deleteJobHandler = async (req, res) => {
@@ -195,13 +180,10 @@ const deleteJobHandler = async (req, res) => {
   const result = await pool.query('DELETE FROM jobs WHERE id = $1 RETURNING id', [id]);
 
   if (!result.rows.length) {
-    return res.status(404).json({
-      status: 'failed',
-      message: 'Job tidak ditemukan',
-    });
+    throw new AppError('Job not found', 404);
   }
 
-  res.json({
+  return res.json({
     status: 'success',
     message: 'Job berhasil dihapus',
   });

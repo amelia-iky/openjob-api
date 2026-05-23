@@ -5,7 +5,7 @@ import { UserSchema } from '../validations/usersSchema.js';
 
 const router = express.Router();
 
-router.post('/users', validate(UserSchema), addUser);
-router.get('/users/:id', getUserById);
+router.post('/', validate(UserSchema), addUser);
+router.get('/:id', getUserById);
 
 export default router;

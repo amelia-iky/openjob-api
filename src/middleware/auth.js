@@ -7,7 +7,7 @@ const auth = (req, res, next) => {
   if (!authHeader) {
     return res.status(401).json({
       status: 'failed',
-      message: 'Token tidak ada',
+      message: 'Invalid or expired token',
     });
   }
 
@@ -22,7 +22,7 @@ const auth = (req, res, next) => {
   } catch (error) {
     return res.status(401).json({
       status: 'failed',
-      message: 'Token tidak valid',
+      message: 'Invalid or expired token',
     });
   }
 };

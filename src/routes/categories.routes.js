@@ -12,14 +12,10 @@ import { CategorySchema } from '../validations/categoriesSchema.js';
 
 const router = express.Router();
 
-router.get('/categories', getCategoriesHandler);
-
-router.get('/categories/:id', getCategoryByIdHandler);
-
-router.post('/categories', auth, validate(CategorySchema), addCategoryHandler);
-
-router.put('/categories/:id', auth, validate(CategorySchema), updateCategoryHandler);
-
-router.delete('/categories/:id', auth, deleteCategoryHandler);
+router.get('/', getCategoriesHandler);
+router.get('/:id', getCategoryByIdHandler);
+router.post('/', auth, validate(CategorySchema), addCategoryHandler);
+router.put('/:id', auth, validate(CategorySchema), updateCategoryHandler);
+router.delete('/:id', auth, deleteCategoryHandler);
 
 export default router;

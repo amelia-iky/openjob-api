@@ -1,5 +1,6 @@
-import { nanoid } from 'nanoid';
+import nanoid from '../utils/nanoid.js';
 import pool from '../database/pool.js';
+import { AppError } from '../utils/AppError.js';
 
 export const getApplicationsHandler = async (req, res) => {
   const result = await pool.query('SELECT * FROM applications');
@@ -18,10 +19,7 @@ export const getApplicationByIdHandler = async (req, res) => {
   const result = await pool.query('SELECT * FROM applications WHERE id = $1', [id]);
 
   if (!result.rows.length) {
-    return res.status(404).json({
-      status: 'failed',
-      message: 'Application tidak ditemukan',
-    });
+    throw new AppError('Application not found', 404);
   }
 
   return res.status(200).json({
@@ -58,8 +56,7 @@ export const getApplicationsByJobIdHandler = async (req, res) => {
 
 export const addApplicationHandler = async (req, res) => {
   const { job_id } = req.body;
-
-  const id = `application-${nanoid(10)}`;
+  const id = `application-${nanoid()}`;
 
   await pool.query(
     `
@@ -84,10 +81,7 @@ export const updateApplicationStatusHandler = async (req, res) => {
   const result = await pool.query('SELECT id FROM applications WHERE id = $1', [id]);
 
   if (!result.rows.length) {
-    return res.status(404).json({
-      status: 'failed',
-      message: 'Application tidak ditemukan',
-    });
+    throw new AppError('Application not found', 404);
   }
 
   return res.status(200).json({
@@ -102,10 +96,7 @@ export const deleteApplicationHandler = async (req, res) => {
   const result = await pool.query('DELETE FROM applications WHERE id = $1 RETURNING id', [id]);
 
   if (!result.rows.length) {
-    return res.status(404).json({
-      status: 'failed',
-      message: 'Application tidak ditemukan',
-    });
+    throw new AppError('Application not found', 404);
   }
 
   return res.status(200).json({

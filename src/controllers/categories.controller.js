@@ -1,10 +1,11 @@
-import { nanoid } from 'nanoid';
+import nanoid from '../utils/nanoid.js';
 import pool from '../database/pool.js';
+import { AppError } from '../utils/AppError.js';
 
 const getCategoriesHandler = async (req, res) => {
   const result = await pool.query('SELECT * FROM categories');
 
-  res.json({
+  return res.json({
     status: 'success',
     data: {
       categories: result.rows,
@@ -18,10 +19,7 @@ const getCategoryByIdHandler = async (req, res) => {
   const result = await pool.query('SELECT * FROM categories WHERE id = $1', [id]);
 
   if (!result.rows.length) {
-    return res.status(404).json({
-      status: 'failed',
-      message: 'Category tidak ditemukan',
-    });
+    throw new AppError('Category not found', 404);
   }
 
   return res.json({
@@ -32,12 +30,11 @@ const getCategoryByIdHandler = async (req, res) => {
 
 const addCategoryHandler = async (req, res) => {
   const { name } = req.body;
-
   const id = nanoid();
 
   await pool.query('INSERT INTO categories (id, name) VALUES ($1, $2)', [id, name]);
 
-  res.status(201).json({
+  return res.status(201).json({
     status: 'success',
     message: 'Category berhasil ditambahkan',
     data: {
@@ -57,13 +54,10 @@ const updateCategoryHandler = async (req, res) => {
   ]);
 
   if (!result.rows.length) {
-    return res.status(404).json({
-      status: 'failed',
-      message: 'Category tidak ditemukan',
-    });
+    throw new AppError('Category not found', 404);
   }
 
-  res.json({
+  return res.json({
     status: 'success',
     message: 'Category berhasil diupdate',
   });
@@ -75,13 +69,10 @@ const deleteCategoryHandler = async (req, res) => {
   const result = await pool.query('DELETE FROM categories WHERE id = $1 RETURNING id', [id]);
 
   if (!result.rows.length) {
-    return res.status(404).json({
-      status: 'failed',
-      message: 'Category tidak ditemukan',
-    });
+    throw new AppError('Category not found', 404);
   }
 
-  res.json({
+  return res.json({
     status: 'success',
     message: 'Category berhasil dihapus',
   });

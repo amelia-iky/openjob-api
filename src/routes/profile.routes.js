@@ -8,8 +8,8 @@ import auth from '../middleware/auth.js';
 
 const router = express.Router();
 
-router.get('/profile', auth, getProfileHandler);
-router.get('/profile/applications', auth, getProfileApplicationsHandler);
-router.get('/profile/bookmarks', auth, getProfileBookmarksHandler);
+router.get('/', auth, getProfileHandler);
+router.get('/applications', auth, getProfileApplicationsHandler);
+router.get('/bookmarks', auth, getProfileBookmarksHandler);
 
 export default router;

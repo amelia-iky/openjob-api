@@ -1,5 +1,6 @@
-import { nanoid } from 'nanoid';
+import nanoid from '../utils/nanoid.js';
 import pool from '../database/pool.js';
+import { AppError } from '../utils/AppError.js';
 
 export const getBookmarksHandler = async (req, res) => {
   const result = await pool.query('SELECT * FROM bookmarks');
@@ -18,10 +19,7 @@ export const getBookmarkByIdHandler = async (req, res) => {
   const result = await pool.query('SELECT * FROM bookmarks WHERE id = $1', [id]);
 
   if (!result.rows.length) {
-    return res.status(404).json({
-      status: 'failed',
-      message: 'Bookmark tidak ditemukan',
-    });
+    throw new AppError('Bookmark not found', 404);
   }
 
   return res.status(200).json({
@@ -45,8 +43,7 @@ export const getBookmarksByUserIdHandler = async (req, res) => {
 
 export const addBookmarkHandler = async (req, res) => {
   const { jobId } = req.params;
-
-  const id = `bookmark-${nanoid(10)}`;
+  const id = `bookmark-${nanoid()}`;
 
   await pool.query(
     `

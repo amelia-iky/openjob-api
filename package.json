@@ -9,7 +9,7 @@
     "migrate:up": "node-pg-migrate -m src/migrations up",
     "migrate:down": "node-pg-migrate -m src/migrations down",
     "migrate:create": "node-pg-migrate -m src/migrations create",
-    "migrate:fresh": "node -r dotenv/config ./node_modules/.bin/node-pg-migrate -m src/migrations down -a && node -r dotenv/config ./node_modules/.bin/node-pg-migrate -m src/migrations up"
+    "migrate:fresh": "node src/database/reset.js && npm run migrate:up"
   },
   "keywords": [],
   "author": "",

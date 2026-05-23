@@ -14,18 +14,12 @@ import { ApplicationSchema } from '../validations/applicationsSchema.js';
 
 const router = express.Router();
 
-router.get('/applications', auth, getApplicationsHandler);
-
-router.get('/applications/:id', auth, getApplicationByIdHandler);
-
-router.get('/applications/user/:userId', auth, getApplicationsByUserIdHandler);
-
-router.get('/applications/job/:jobId', auth, getApplicationsByJobIdHandler);
-
-router.post('/applications', auth, validate(ApplicationSchema), addApplicationHandler);
-
-router.put('/applications/:id', auth, updateApplicationStatusHandler);
-
-router.delete('/applications/:id', auth, deleteApplicationHandler);
+router.get('/', auth, getApplicationsHandler);
+router.get('/user/:userId', auth, getApplicationsByUserIdHandler);
+router.get('/job/:jobId', auth, getApplicationsByJobIdHandler);
+router.get('/:id', auth, getApplicationByIdHandler);
+router.post('/', auth, validate(ApplicationSchema), addApplicationHandler);
+router.put('/:id', auth, updateApplicationStatusHandler);
+router.delete('/:id', auth, deleteApplicationHandler);
 
 export default router;

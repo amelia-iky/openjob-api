@@ -14,7 +14,7 @@ const loginHandler = async (req, res) => {
     FROM users
     WHERE email = $1
     `,
-    [email]
+    [email],
   );
 
   if (!result.rows.length) {
@@ -28,13 +28,21 @@ const loginHandler = async (req, res) => {
     throw new AppError('Email or password is incorrect', 401);
   }
 
-  const accessToken = jwt.sign({ id: user.id, role: user.role }, process.env.ACCESS_TOKEN_KEY, {
-    expiresIn: '3h',
-  });
+  const accessToken = jwt.sign(
+    { id: user.id, role: user.role },
+    process.env.ACCESS_TOKEN_KEY,
+    {
+      expiresIn: '3h',
+    },
+  );
 
-  const refreshToken = jwt.sign({ id: user.id }, process.env.REFRESH_TOKEN_KEY, {
-    expiresIn: '7d',
-  });
+  const refreshToken = jwt.sign(
+    { id: user.id },
+    process.env.REFRESH_TOKEN_KEY,
+    {
+      expiresIn: '7d',
+    },
+  );
 
   await pool.query(
     `
@@ -42,7 +50,7 @@ const loginHandler = async (req, res) => {
     (id, user_id, token, expired_at)
     VALUES ($1, $2, $3, NOW() + interval '7 days')
     `,
-    [nanoid(), user.id, refreshToken]
+    [nanoid(), user.id, refreshToken],
   );
 
   return res.status(200).json({
@@ -64,7 +72,7 @@ const refreshAuthenticationHandler = async (req, res) => {
     FROM authentications
     WHERE token = $1
     `,
-    [refreshToken]
+    [refreshToken],
   );
 
   if (!tokenResult.rows.length) {
@@ -79,9 +87,13 @@ const refreshAuthenticationHandler = async (req, res) => {
     throw new AppError('Refresh token tidak valid', 400);
   }
 
-  const accessToken = jwt.sign({ id: decoded.id }, process.env.ACCESS_TOKEN_KEY, {
-    expiresIn: '3h',
-  });
+  const accessToken = jwt.sign(
+    { id: decoded.id },
+    process.env.ACCESS_TOKEN_KEY,
+    {
+      expiresIn: '3h',
+    },
+  );
 
   return res.status(200).json({
     status: 'success',
@@ -100,7 +112,7 @@ const deleteAuthenticationHandler = async (req, res) => {
     WHERE token = $1
     RETURNING id
     `,
-    [refreshToken]
+    [refreshToken],
   );
 
   if (!result.rows.length) {
@@ -113,4 +125,8 @@ const deleteAuthenticationHandler = async (req, res) => {
   });
 };
 
-export { loginHandler, refreshAuthenticationHandler, deleteAuthenticationHandler };
+export {
+  loginHandler,
+  refreshAuthenticationHandler,
+  deleteAuthenticationHandler,
+};
